@@ -1,0 +1,12 @@
+ARG BASE_IMAGE=python:3.11
+FROM ${BASE_IMAGE}
+RUN apt-get update \
+        && apt-get install build-essential git gcc -y \
+        && apt-get clean
+
+RUN pip install -U pip setuptools wheel
+RUN pip install pdm
+
+RUN mkdir /data
+
+CMD ""

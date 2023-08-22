@@ -1,0 +1,107 @@
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+[project]
+name = "collection-keeper"
+description = "A tool to download, update and manage porn collection. "
+authors = [{name = "qscad", email = "ilyavph@protonmail.com"}]
+license = {text = "WTFPL"}
+readme = "README.md"
+requires-python = ">=3.8"
+keywords = []
+dynamic = ["version"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Documentation",
+    "Topic :: Software Development",
+    "Topic :: Utilities",
+    "Typing :: Typed",
+]
+dependencies = [
+    "gallery-dl>=1.25.8",
+    "pysocks>=1.7.1",
+    "omegaconf>=2.3.0",
+    "joblib>=1.3.2",
+    "tqdm>=4.66.1",
+]
+
+[project.urls]
+Homepage = "https://qscad.github.io/collection-keeper"
+Documentation = "https://qscad.github.io/collection-keeper"
+Changelog = "https://qscad.github.io/collection-keeper/changelog"
+Repository = "https://github.com/qscad/collection-keeper"
+Issues = "https://github.com/qscad/collection-keeper/issues"
+Discussions = "https://github.com/qscad/collection-keeper/discussions"
+Gitter = "https://gitter.im/collection-keeper/community"
+
+[project.scripts]
+collection-keeper = "collection_keeper.cli:main"
+
+[tool.pdm]
+version = {source = "scm"}
+plugins = [
+    "pdm-multirun",
+]
+
+[tool.pdm.build]
+package-dir = "src"
+editable-backend = "editables"
+
+[tool.pdm.dev-dependencies]
+nox = ["nox"]
+full-dev = ["collection-keeper[nox,docs,quality,typing,security,tests,precommit]"]
+ci-quality = ["collection-keeper[nox,docs,quality,typing,security]"]
+ci-tests = ["collection-keeper[nox,tests]"]
+docs = [
+    "black>=23.1",
+    "markdown-callouts>=0.2",
+    "markdown-exec>=0.5",
+    "mkdocs>=1.5",
+    "mkdocs-coverage>=0.2",
+    "mkdocs-gen-files>=0.3",
+    "mkdocs-git-committers-plugin-2>=1.1",
+    "mkdocs-literate-nav>=0.4",
+    "mkdocs-material>=7.3",
+    "mkdocs-minify-plugin>=0.6.4",
+    "mkdocstrings[python]>=0.18",
+    "toml>=0.10",
+]
+maintain = [
+    "black>=23.1",
+    "blacken-docs>=1.13",
+    "git-changelog>=1.0",
+]
+quality = [
+    "ruff>=0.0.246",
+    "ssort",
+    "isort",
+]
+tests = [
+    "pytest>=6.2",
+    "pytest-cov>=3.0",
+    "pytest-randomly>=3.10",
+    "pytest-xdist>=2.4",
+    "pytest-mock>=3.11.1",
+]
+typing = [
+    "mypy>=0.910",
+    "types-markdown>=3.3",
+    "types-pyyaml>=6.0",
+    "types-toml>=0.10",
+]
+precommit = [
+    "pre-commit"
+]
+security = [
+    "safety>=2",
+    "bandit"
+]

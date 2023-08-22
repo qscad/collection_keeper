@@ -1,0 +1,9 @@
+{
+    "conventionalCommits.scopes": [
+        "config",
+        "download",
+        "dedupe",
+        "cli",
+        "dev",
+    ]
+}

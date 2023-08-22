@@ -1,0 +1,82 @@
+name: tests
+
+on:
+  push:
+  pull_request:
+    branches:
+      - main
+      - dev
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  LANG: en_US.utf-8
+  LC_ALL: en_US.utf-8
+  PYTHONIOENCODING: UTF-8
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Fetch all tags
+      run: git fetch --depth=1 --tags
+
+    - name: Set up PDM
+      uses: pdm-project/setup-pdm@v3
+      with:
+        python-version: "3.9"
+
+    - name: Resolve dependencies
+      run: pdm lock -v --no-cross-platform -G ci-quality
+
+    - name: Install dependencies
+      run: pdm install -G ci-quality
+
+    - name: Check the code safety
+      run: pdm run nox check_safety
+
+    - name: Check if the code is correctly typed
+      run: pdm run nox check_types
+    
+    - name: Check the code quality
+      run: pdm run nox lint
+
+  tests:
+    strategy:
+      max-parallel: 4
+      matrix:
+        os:
+        - ubuntu-latest
+        - macos-latest
+        python-version:
+        - "3.9"
+        - "3.10"
+        - "3.11"
+        - "3.12"
+    runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ matrix.python-version == '3.12' }}
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Set up PDM
+      uses: pdm-project/setup-pdm@v3
+      with:
+        python-version: ${{ matrix.python-version }}
+        allow-python-prereleases: true
+
+    - name: Resolve dependencies
+      run: pdm lock -v --no-cross-platform -G ci-tests
+
+    - name: Install dependencies
+      run: pdm install --no-editable -G ci-tests
+
+    - name: Run the test suite
+      run: pdm run nox test

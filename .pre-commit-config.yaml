@@ -1,0 +1,35 @@
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v2.3.0
+    hooks:
+    -   id: check-yaml
+    -   id: end-of-file-fixer
+    -   id: trailing-whitespace
+-   repo: local
+    hooks:
+    -   id: format
+        name: format
+        entry: pdm run nox -e format
+        language: system
+        types: [python]
+-   repo: local
+    hooks:
+    -   id: lint
+        name: lint
+        entry: pdm run nox -e lint
+        language: system
+        types: [python]
+-   repo: local
+    hooks:
+    -   id: safety
+        name: safety
+        entry: pdm run nox -e check_safety
+        language: system
+        types: [python]
+-   repo: local
+    hooks:
+    -   id: check_types
+        name: check_types
+        entry: pdm run nox -e check_types
+        language: system
+        types: [python]

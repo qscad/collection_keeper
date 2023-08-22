@@ -1,0 +1,19 @@
+# Changes here will be overwritten by Copier
+_commit: 1.0.0
+_src_path: gh:ilbumi/copier-python-vscode
+author_email: ilyavph@protonmail.com
+author_fullname: qscad
+author_username: qscad
+copyright_date: '2023'
+copyright_holder: qscad
+copyright_holder_email: ilyavph@protonmail.com
+copyright_license: Do What The F*ck You Want To Public License
+docker_base_image: python:3.11
+project_description: 'A tool to download, update and manage porn collection. '
+project_name: collection_keeper
+python_package_command_line_name: collection-keeper
+python_package_distribution_name: collection-keeper
+python_package_import_name: collection_keeper
+repository_name: collection-keeper
+repository_namespace: qscad
+repository_provider: github.com
