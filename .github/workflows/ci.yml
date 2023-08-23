@@ -39,13 +39,13 @@ jobs:
       run: pdm install -G ci-quality
 
     - name: Check the code safety
-      run: pdm run nox check_safety
+      run: pdm run nox -e check_safety
 
     - name: Check if the code is correctly typed
-      run: pdm run nox check_types
+      run: pdm run nox -e check_types
     
     - name: Check the code quality
-      run: pdm run nox lint
+      run: pdm run nox -e lint
 
   tests:
     strategy:
@@ -79,4 +79,4 @@ jobs:
       run: pdm install --no-editable -G ci-tests
 
     - name: Run the test suite
-      run: pdm run nox test
+      run: pdm run nox -e test
