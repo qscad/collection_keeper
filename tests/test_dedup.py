@@ -30,13 +30,9 @@ def test_update_phashes() -> None:
     config.Config.set_config_path(os.path.abspath("./test_collection.yml"))
     with tempfile.NamedTemporaryFile() as tmp_file:
         assert config.Config._config is not None
-        config.Config._config["postprocessing"]["dedupe_strategy"][
-            "phashes_db"
-        ] = tmp_file.name
+        config.Config._config["postprocessing"]["dedupe_strategy"]["phashes_db"] = tmp_file.name
         images.update_phashes("./test_images/")
-        db_path = (
-            config.Config.get("postprocessing").get("dedupe_strategy").get("phashes_db")
-        )
+        db_path = config.Config.get("postprocessing").get("dedupe_strategy").get("phashes_db")
         with images.get_dict(db_path) as db:
             assert len(db) == 6
             assert db["./test_images/a/cat879.jpg"] == db["./test_images/c/cat879.jpg"]
@@ -57,9 +53,7 @@ def test_get_duplicates() -> None:
     config.Config.set_config_path(os.path.abspath("./test_collection.yml"))
     with tempfile.NamedTemporaryFile() as tmp_file:
         assert config.Config._config is not None
-        config.Config._config["postprocessing"]["dedupe_strategy"][
-            "phashes_db"
-        ] = tmp_file.name
+        config.Config._config["postprocessing"]["dedupe_strategy"]["phashes_db"] = tmp_file.name
         images.update_phashes("./test_images/")
         d = images.get_duplicates()
         assert len(d) == 1
@@ -69,6 +63,4 @@ def test_get_duplicates() -> None:
         assert len(d) == 3
         for cluster in d:
             for i, j in combinations(cluster, 2):
-                assert _get_hashes_diff(i, j) == (
-                    phash(Image.open(i)) - phash(Image.open(j))
-                )
+                assert _get_hashes_diff(i, j) == (phash(Image.open(i)) - phash(Image.open(j)))

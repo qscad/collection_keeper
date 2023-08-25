@@ -18,9 +18,7 @@ class Config:
     """Config handler."""
 
     _config_path = os.path.expandvars(
-        "%APPDATA%\\pcollection\\config.yml"
-        if os.name == "nt"
-        else "${HOME}/.config/pcollection/config.yml",
+        "%APPDATA%\\pcollection\\config.yml" if os.name == "nt" else "${HOME}/.config/pcollection/config.yml",
     )
     _config: DictConfig | None = None
 
@@ -37,9 +35,7 @@ class Config:
                 f"Invalid config found in '{cls._config_path}'",
             )
         gdl_config.load()
-        collection_root = (
-            gdl_config.get(("extractor",), "base-directory") or "./gallery-dl"
-        )
+        collection_root = gdl_config.get(("extractor",), "base-directory") or "./gallery-dl"
         _config["collection_root"] = collection_root
         cls._config = _config
 
