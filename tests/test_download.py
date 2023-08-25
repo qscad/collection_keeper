@@ -4,7 +4,10 @@ import os
 
 def test_download_tags(tmpdir, mocker) -> None:
     """Test download_tags."""
-    mocker.patch("collection_keeper.download.utils.download", return_value=["tag_1"])
+    mocker.patch(
+        "collection_keeper.download.utils._run_gdl",
+        return_value=["tag_1\n", ""],
+    )
 
     from collection_keeper import config
     from collection_keeper.download import download

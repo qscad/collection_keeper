@@ -1,7 +1,11 @@
 """Downloading utils."""
+import logging
 import subprocess as sp  # nosec
 from itertools import cycle
-from typing import Dict, Generator, List, Optional, Tuple
+from typing import Dict, Generator, List, Optional, Sequence, Tuple
+
+logger = logging.getLogger("main.download")
+
 
 RESOURCES = {
     "e621": "https://e621.net/posts?tags={}",
@@ -35,7 +39,23 @@ def download(url: str, proxy: Optional[str] = None) -> List[str]:
     Returns:
         List[str]: list of all downloaded files (including existing before)
     """
-    cmd = ("gallery-dl", "--proxy", proxy, url) if proxy is not None else ("gallery-dl", url)
+    cmd = (
+        ("gallery-dl", "--proxy", proxy, url)
+        if proxy is not None
+        else ("gallery-dl", url)
+    )
+
+    logger.info(f"Download started: {url}")
+    stdout, stderr = _run_gdl(cmd)
+    logger.info(f"Download finished: {url}")
+
+    if len(stderr) == 0:
+        return stdout.split("\n")[:-1]
+    logger.error(f"Error during downloading: {url}, {stderr}")
+    raise DownloadError(stderr)
+
+
+def _run_gdl(cmd: Sequence[str]) -> Tuple[str, str]:
     process = sp.Popen(
         cmd,  # nosec  # noqa: S603
         stdout=sp.PIPE,
@@ -43,9 +63,7 @@ def download(url: str, proxy: Optional[str] = None) -> List[str]:
         text=True,
     )
     stdout, stderr = process.communicate()
-    if len(stderr) == 0:
-        return stdout.split("\n")[:-1]
-    raise DownloadError(stderr)
+    return stdout, stderr
 
 
 def generate_urls(
@@ -66,9 +84,15 @@ def generate_urls(
         for resource_handle in tags_config[tag]:
             resource_base_url = RESOURCES.get(resource_handle)
             if resource_base_url is None:
+                logger.error(
+                    f"Error during generating URLs: '{resource_handle}' handle is unknown",
+                )
                 raise UnknownResourceError(
                     f"Unknown resource handle: {resource_handle}. The options are: {', '.join(RESOURCES.keys())}",
                 )
+            logger.info(
+                f"Generated URL for tag '{tag}', resource: {resource_handle}",
+            )
             yield resource_base_url.format(tag)
 
 

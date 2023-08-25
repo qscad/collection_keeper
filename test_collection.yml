@@ -1,7 +1,9 @@
+log_file: "./log.txt"
+log_level: "INFO"
 download:
   num_workers: 1
   proxies:
-      - socks5://user:password@host:port
+      - socks5://user:password@host:80
   tags:
     tag_1:
       - rule34
@@ -11,5 +13,5 @@ postprocessing:
   dedupe_strategy:
     phashes_db: "./phashes.sqlite"
     commit_freq: 200
-    min_distance: 1
+    max_distance: 1
     match_video_duration: True

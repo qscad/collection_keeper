@@ -2,6 +2,7 @@
 import os
 from typing import Any
 
+from gallery_dl import config as gdl_config
 from omegaconf import DictConfig, DictKeyType, OmegaConf
 
 
@@ -33,7 +34,9 @@ class Config:
             raise InvalidConfigError(
                 f"Invalid config found in '{cls._config_path}'",
             )
-
+        gdl_config.load()
+        collection_root = gdl_config.get(("extractor",), "base-directory") or "./gallery-dl"
+        _config["collection_root"] = collection_root
         cls._config = _config
 
     @classmethod

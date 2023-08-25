@@ -14,6 +14,13 @@
 from __future__ import annotations
 
 import argparse
+import logging
+
+import click
+
+from collection_keeper.config import Config
+from collection_keeper.dedupe import mark_duplicates, update_phashes
+from collection_keeper.download import download_tags
 
 
 def get_parser() -> argparse.ArgumentParser:
@@ -25,18 +32,43 @@ def get_parser() -> argparse.ArgumentParser:
     return argparse.ArgumentParser(prog="collection-keeper")
 
 
-def main(args: list[str] | None = None) -> int:
-    """Run the main program.
+def _setup_logging() -> None:
+    logger = logging.getLogger("main")
+    logger.setLevel(logging.getLevelName(Config.get("log_level")))
 
-    This function is executed when you type `collection-keeper` or `python -m collection_keeper`.
+    fh = logging.FileHandler(Config.get("log_file"))
+    fh.setLevel(logging.INFO)
 
-    Parameters:
-        args: Arguments passed from the command line.
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.ERROR)
 
-    Returns:
-        An exit code.
-    """
-    parser = get_parser()
-    opts = parser.parse_args(args=args)
-    print(opts)
+    formatter = logging.Formatter("%(asctime)s [%(name)s|%(levelname)s] %(message)s")
+    ch.setFormatter(formatter)
+    fh.setFormatter(formatter)
+
+    logger.addHandler(ch)
+    logger.addHandler(fh)
+
+
+@click.command(name="Collection Keeper")
+@click.option("--config", "-c", help="Config file location.")
+@click.option("--download", "--update", "-u", help="Update collection.", is_flag=True)
+@click.option("--dedupe", "-d", help="Deduplicate collection.", is_flag=True)
+def main(
+    download: bool,  # noqa: FBT001
+    dedupe: bool,  # noqa: FBT001
+    config: str | None = None,
+) -> int:
+    """Run the main program. Default pipeline includes downloading and deduplication."""
+    if config is not None:
+        Config.set_config_path(config)
+    _setup_logging()
+    if not (download or dedupe):
+        download = True
+        dedupe = True
+    if download:
+        download_tags()
+    if dedupe:
+        update_phashes(Config.get("collection_root"))
+        mark_duplicates()
     return 0
