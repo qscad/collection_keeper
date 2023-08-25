@@ -1,4 +1,5 @@
 """Dedupe images."""
+import logging
 import os
 from glob import glob
 from sqlite3 import Binary
@@ -11,6 +12,8 @@ from sklearn.neighbors import NearestNeighbors
 from sqlitedict import SqliteDict, decode, encode
 
 from collection_keeper.config import Config
+
+logger = logging.getLogger("main.dedupe")
 
 
 def is_image(filename: str) -> bool:
@@ -50,6 +53,8 @@ def update_phashes(root_folder: str) -> None:
     """
     db_path = Config.get("postprocessing").get("dedupe_strategy").get("phashes_db")
     commit_freq = Config.get("postprocessing").get("dedupe_strategy").get("commit_freq")
+
+    logger.info("Started updating pHashes")
     calculated_phashes = 0
     with get_dict(db_path) as db:
         for img in generate_image_paths(root_folder):
@@ -60,6 +65,7 @@ def update_phashes(root_folder: str) -> None:
                 if (calculated_phashes + 1) % commit_freq == 0:
                     db.commit()
         db.commit()
+    logger.info(f"Finished updating pHashes, {calculated_phashes} new items added")
 
 
 def get_duplicates(distance: int = 0) -> List[List[str]]:
@@ -74,6 +80,7 @@ def get_duplicates(distance: int = 0) -> List[List[str]]:
     db_path = Config.get("postprocessing").get("dedupe_strategy").get("phashes_db")
     keys = []
     matrix = []
+    logger.info(f"Started duplicates search, max_distance is {distance}")
     with get_dict(db_path) as db:
         for key in db:
             keys.append(key)
@@ -82,6 +89,7 @@ def get_duplicates(distance: int = 0) -> List[List[str]]:
     nneighbors = NearestNeighbors(radius=distance, metric="l1")
     nneighbors.fit(matrix)
 
+    logger.info(f"Searching for similar images among {len(matrix)}")
     clusters: Set[FrozenSet[int]] = set()
     all_distances, all_neighbors = nneighbors.radius_neighbors(return_distance=True)
     for row_id, [distances, neighbors] in enumerate(
@@ -95,5 +103,5 @@ def get_duplicates(distance: int = 0) -> List[List[str]]:
         )
         if len(cluster_ids) > 1:
             clusters.add(cluster_ids)
-
+    logger.info(f"Found {len(clusters)} clusters of duplicates")
     return [[keys[i] for i in x] for x in clusters]
