@@ -2,7 +2,7 @@
 import logging
 import subprocess as sp  # nosec
 from itertools import cycle
-from typing import Dict, Generator, List, Optional, Tuple
+from typing import Dict, Generator, List, Optional, Sequence, Tuple
 
 logger = logging.getLogger("main.download")
 
@@ -39,9 +39,23 @@ def download(url: str, proxy: Optional[str] = None) -> List[str]:
     Returns:
         List[str]: list of all downloaded files (including existing before)
     """
-    cmd = ("gallery-dl", "--proxy", proxy, url) if proxy is not None else ("gallery-dl", url)
+    cmd = (
+        ("gallery-dl", "--proxy", proxy, url)
+        if proxy is not None
+        else ("gallery-dl", url)
+    )
 
     logger.info(f"Download started: {url}")
+    stdout, stderr = _run_gdl(cmd)
+    logger.info(f"Download finished: {url}")
+
+    if len(stderr) == 0:
+        return stdout.split("\n")[:-1]
+    logger.error(f"Error during downloading: {url}, {stderr}")
+    raise DownloadError(stderr)
+
+
+def _run_gdl(cmd: Sequence[str]) -> Tuple[str, str]:
     process = sp.Popen(
         cmd,  # nosec  # noqa: S603
         stdout=sp.PIPE,
@@ -49,12 +63,7 @@ def download(url: str, proxy: Optional[str] = None) -> List[str]:
         text=True,
     )
     stdout, stderr = process.communicate()
-    logger.info(f"Download finished: {url}")
-
-    if len(stderr) == 0:
-        return stdout.split("\n")[:-1]
-    logger.error(f"Error during downloading: {url}, {stderr}")
-    raise DownloadError(stderr)
+    return stdout, stderr
 
 
 def generate_urls(
