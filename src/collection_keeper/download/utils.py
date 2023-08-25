@@ -35,11 +35,7 @@ def download(url: str, proxy: Optional[str] = None) -> List[str]:
     Returns:
         List[str]: list of all downloaded files (including existing before)
     """
-    cmd = (
-        ("gallery-dl", "--proxy", proxy, url)
-        if proxy is not None
-        else ("gallery-dl", url)
-    )
+    cmd = ("gallery-dl", "--proxy", proxy, url) if proxy is not None else ("gallery-dl", url)
     process = sp.Popen(
         cmd,  # nosec  # noqa: S603
         stdout=sp.PIPE,
