@@ -1,12 +1,14 @@
 """Dedupe images."""
 import logging
 import os
+import shutil
 from glob import glob
 from sqlite3 import Binary
 from typing import FrozenSet, Generator, List, Set
 
 import numpy as np
 from imagehash import ImageHash, hex_to_hash, phash
+from omegaconf import OmegaConf
 from PIL import Image
 from sklearn.neighbors import NearestNeighbors
 from sqlitedict import SqliteDict, decode, encode
@@ -105,3 +107,29 @@ def get_duplicates(distance: int = 0) -> List[List[str]]:
             clusters.add(cluster_ids)
     logger.info(f"Found {len(clusters)} clusters of duplicates")
     return [[keys[i] for i in x] for x in clusters]
+
+
+def mark_duplicates() -> None:
+    """Rename files to include duplication info."""
+    distance = (
+        Config.get("postprocessing", OmegaConf.create())
+        .get("dedupe_strategy", OmegaConf.create())
+        .get("max_distance", 0)
+    )
+    duplicates = get_duplicates(distance)
+    to_remove: Set[str] = set()
+    for cluster in duplicates:
+        suffix = f"[DUPE-{phash(Image.open(cluster[0]))!s}]"
+        for path in cluster:
+            if suffix not in path:
+                no_ext, ext = os.path.splitext(path)
+                shutil.copy(path, f"{no_ext}{suffix}{ext}")
+                to_remove.add(path)
+
+                tag_file = f"{no_ext}.txt"
+                if os.path.exists(tag_file):
+                    shutil.copy(tag_file, f"{no_ext}{suffix}.txt")
+                    to_remove.add(tag_file)
+
+    for file in to_remove:
+        os.remove(file)

@@ -19,7 +19,7 @@ import logging
 import click
 
 from collection_keeper.config import Config
-from collection_keeper.dedupe import update_phashes
+from collection_keeper.dedupe import mark_duplicates, update_phashes
 from collection_keeper.download import download_tags
 
 
@@ -70,4 +70,5 @@ def main(
         download_tags()
     if dedupe:
         update_phashes(Config.get("collection_root"))
+        mark_duplicates()
     return 0
