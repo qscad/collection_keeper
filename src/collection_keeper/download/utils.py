@@ -14,7 +14,7 @@ RESOURCES = {
     "paheal": "https://rule34.paheal.net/post/list/{}",
     "joyreactor": "https://joyreactor.cc/tag/{}",
     "coomer": "https://coomer.party/onlyfans/user/{}",
-    "kemono": "https://kemono.party/onlyfans/user/{}",
+    "kemono": "https://kemono.party/patreon/user/{}",
 }
 
 
