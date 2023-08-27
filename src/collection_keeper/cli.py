@@ -14,13 +14,13 @@
 from __future__ import annotations
 
 import argparse
-import logging
 
 import click
 
 from collection_keeper.config import Config
 from collection_keeper.dedupe import mark_duplicates, update_phashes
 from collection_keeper.download import download_tags
+from collection_keeper.logging import _setup_logging
 
 
 def get_parser() -> argparse.ArgumentParser:
@@ -30,24 +30,6 @@ def get_parser() -> argparse.ArgumentParser:
         An argparse parser.
     """
     return argparse.ArgumentParser(prog="collection-keeper")
-
-
-def _setup_logging() -> None:
-    logger = logging.getLogger("main")
-    logger.setLevel(logging.getLevelName(Config.get("log_level")))
-
-    fh = logging.FileHandler(Config.get("log_file"))
-    fh.setLevel(logging.INFO)
-
-    ch = logging.StreamHandler()
-    ch.setLevel(logging.ERROR)
-
-    formatter = logging.Formatter("%(asctime)s [%(name)s|%(levelname)s] %(message)s")
-    ch.setFormatter(formatter)
-    fh.setFormatter(formatter)
-
-    logger.addHandler(ch)
-    logger.addHandler(fh)
 
 
 @click.command(name="Collection Keeper")

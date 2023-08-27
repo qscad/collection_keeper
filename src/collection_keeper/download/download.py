@@ -47,10 +47,11 @@ def download_tags() -> Tuple[List[str], List[str]]:
         prefer="threads",
         return_as="generator",
     ) as parallel:
-        for files_list, errors in parallel(
+        for files_list, error in parallel(
             delayed(safe_call(download))(url, proxy)
             for url, proxy in tqdm(download_tasks)
         ):
-            result.extend(files_list)
-            result_errors.extend(errors)
+            if files_list is not None:
+                result.extend(files_list)
+            result_errors.append(error)
     return result, result_errors
