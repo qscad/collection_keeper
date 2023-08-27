@@ -17,5 +17,6 @@ def test_download_tags(tmpdir, mocker) -> None:
     with tmpdir.as_cwd() as _:
         paths, errors = download.download_tags()
         assert len(paths) == 1
-        assert len(errors) == 0
+        assert len(errors) == 1
+        assert len(errors[0]) == 0
         assert "tag_1" in paths[0]
