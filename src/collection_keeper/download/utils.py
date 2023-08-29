@@ -9,10 +9,12 @@ logger = logging.getLogger("main.download")
 
 RESOURCES = {
     "e621": "https://e621.net/posts?tags={}",
+    "e6ai": "https://e6ai.net/posts?tags={}",
     "rule34": "https://rule34.xxx/index.php?page=post&s=list&tags={}",
     "danbooru": "https://danbooru.donmai.us/posts?tags={}",
     "paheal": "https://rule34.paheal.net/post/list/{}",
     "joyreactor": "https://joyreactor.cc/tag/{}",
+    "pornreactor": "http://pornreactor.cc/tag/{}",
     "coomer": "https://coomer.party/onlyfans/user/{}",
     "kemono": "https://kemono.party/patreon/user/{}",
 }
