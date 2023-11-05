@@ -15,8 +15,13 @@ RESOURCES = {
     "paheal": "https://rule34.paheal.net/post/list/{}",
     "joyreactor": "https://joyreactor.cc/tag/{}",
     "pornreactor": "http://pornreactor.cc/tag/{}",
-    "coomer": "https://coomer.party/onlyfans/user/{}",
-    "kemono": "https://kemono.party/patreon/user/{}",
+    "coomer": "https://coomer.su/onlyfans/user/{}",
+    "coomer-onlyfans": "https://coomer.su/onlyfans/user/{}",
+    "coomer-fansly": "https://coomer.su/fansly/user/{}",
+    "kemono": "https://kemono.su/patreon/user/{}",
+    "kemono-patreon": "https://kemono.su/patreon/user/{}",
+    "kemono-fanbox": "https://kemono.su/fanbox/user/{}",
+    "kemono-gumroad": "https://kemono.su/gumroad/user/{}",
 }
 
 
